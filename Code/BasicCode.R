@@ -11,4 +11,9 @@ df = read.csv('https://covidtracking.com/api/states/daily.csv') %>%
      mutate(fips = str_sub(paste0('0', fips), -2, -1), date = ymd(date))
 #df3 = read.csv('https://covidtracking.com/api/us/daily.csv')
 
-df.ca = filter(df, fips == '06')
+df %>% 
+     filter(!is.na(positiveIncrease)) %>% 
+     ggplot(aes(x = date, y = positiveIncrease)) +
+     geom_bar(stat = 'identity', fill = 'steelblue') +
+     facet_wrap(~fips, scales = 'free') +
+     theme_minimal()
