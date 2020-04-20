@@ -15,5 +15,24 @@ df %>%
      filter(!is.na(positiveIncrease)) %>% 
      ggplot(aes(x = date, y = positiveIncrease)) +
      geom_bar(stat = 'identity', fill = 'steelblue') +
-     facet_wrap(~fips, scales = 'free') +
+     facet_wrap(~ state, scales = 'free') +
      theme_minimal()
+
+state.list = df %>% 
+     group_by(state) %>% 
+     mutate(MaxCase = max(positive)) %>% 
+     ungroup() %>% 
+     distinct(state, .keep_all = TRUE) %>% 
+     filter(MaxCase > 5000) %>% 
+     select(state)
+
+test = df %>% 
+     filter(state %in% state.list$state, positive > 500) %>% 
+     group_by(state) %>% 
+     mutate(day = c(1:n())) %>% 
+     ungroup() %>% 
+     ggplot(aes(x = day, y = log(positive), color = state)) +
+          geom_point() +
+          geom_line() +
+          coord_trans(y="log2") +
+          theme_minimal()
