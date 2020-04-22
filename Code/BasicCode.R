@@ -115,7 +115,7 @@ data2 %>%
 
 data2 %>% 
         filter(Country.Region %in% state.list2$Country.Region, Count > 50) %>% 
-        #filter(Country.Region %in% c('Brazil', 'Japan', 'Singapore', 'Sweden', 'Korea, South', 'Canada', 'Philippines', 'Malaysia', 'Qatar')) %>% 
+       # filter(Country.Region %in% c('Japan', 'Singapore', 'Sweden', 'Korea, South', 'Philippines', 'Malaysia', 'Qatar')) %>% 
         filter(Country.Region %in% c('Japan', 'Singapore', 'Pakistan', 'Korea, South', 'Dominican Republic','Israel', 'Norway')) %>% 
         group_by(Country.Region) %>% 
         mutate(day = c(1:n())) %>% 
