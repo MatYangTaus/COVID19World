@@ -14,16 +14,16 @@ df = read.csv('https://covidtracking.com/api/states/daily.csv') %>%
 df %>% 
      filter(!is.na(positiveIncrease)) %>% 
      ggplot(aes(x = date, y = positiveIncrease)) +
-     geom_bar(stat = 'identity', fill = 'steelblue') +
-     facet_wrap(~ state, scales = 'free') +
-     theme_minimal()
+             geom_bar(stat = 'identity', fill = 'steelblue') +
+             facet_wrap(~ state, scales = 'free') +
+             theme_minimal()
 
 state.list = df %>% 
      group_by(state) %>% 
      mutate(MaxCase = max(positive)) %>% 
      ungroup() %>% 
      distinct(state, .keep_all = TRUE) %>% 
-     filter(MaxCase > 5000) %>% 
+     filter(MaxCase > 10000) %>% 
      select(state)
 
 df %>% 
@@ -53,7 +53,7 @@ data2 = data %>%
      group_by(Country.Region, date) %>% 
      summarize(Count = sum(count)) %>% 
      ungroup()
-
+ 
 state.list2 = data2 %>% 
      group_by(Country.Region) %>% 
      mutate(MaxCase = max(Count)) %>% 
