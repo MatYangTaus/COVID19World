@@ -75,7 +75,7 @@ df2 %>%
       geom_text(mapping = aes(label = 'Shelter in place declared', x = as.Date('2020-03-16'), y = -0.75), angle = 0, hjust = 0) +
       theme_fivethirtyeight()
 
-df2 %>% 
+#df2 %>% 
 #  filter(state == 'California',date == as.Date("2020-03-30")) %>% 
-  filter(county == 'Santa Clara') %>% 
-  arrange(-cases)
+#  filter(county == 'Santa Clara') %>% 
+#  arrange(-cases)
