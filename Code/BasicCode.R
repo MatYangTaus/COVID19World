@@ -5,34 +5,31 @@ pacman::p_load(tidyverse, skimr, lubridate, ggthemes)
 #temp <- fromJSON(file=json_file)
 
 #df = read.csv('https://covidtracking.com/api/v1/states/current.csv')
-df = read.csv('https://covidtracking.com/api/states/daily.csv') %>% 
+df = read.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv') %>% 
      arrange(state, date) %>% 
-     select(-c(hash, dateChecked)) %>% 
-     mutate(fips = str_sub(paste0('0', fips), -2, -1), date = ymd(date))
+        group_by(state) %>% 
+    # select(-c(hash, dateChecked)) %>% 
+     mutate(fips = str_sub(paste0('0', fips), -2, -1), date = ymd(date), positiveIncrease = cases - lag(cases), Maxcase = max(cases)) %>% 
+        ungroup()
 #df3 = read.csv('https://covidtracking.com/api/us/daily.csv')
 
-df %>% 
-     filter(!is.na(positiveIncrease)) %>% 
+state.list0 = df %>% 
+     filter(!is.na(positiveIncrease), Maxcase > 10000) 
+
+state.list0 %>% 
      ggplot(aes(x = date, y = positiveIncrease)) +
              geom_bar(stat = 'identity', fill = 'steelblue') +
              facet_wrap(~ state, scales = 'free') +
              theme_minimal()
 
-state.list = df %>% 
-     group_by(state) %>% 
-     mutate(MaxCase = max(positive)) %>% 
-     ungroup() %>% 
-     distinct(state, .keep_all = TRUE) %>% 
-     filter(MaxCase > 10000) %>% 
-     select(state)
-
 df %>% 
-     filter(state %in% state.list$state, positive > 500) %>% 
-     filter(state %in% c('CA', 'NJ', 'MA', 'NY', 'TX', 'FL')) %>% 
+  #   filter(state %in% state.list$state, positive > 500) %>% 
+     filter(fips %in% unique(state.list0$fips), (cases)> 50) %>%
+        arrange(state,date) %>% 
      group_by(state) %>% 
      mutate(day = c(1:n())) %>% 
      ungroup() %>% 
-     ggplot(aes(x = day, y = log(positive), color = state)) +
+     ggplot(aes(x = day, y = (cases), color = state)) +
           geom_point() +
           geom_line() +
           #coord_trans(y="log2") +
@@ -62,20 +59,20 @@ state.list2 = data2 %>%
      filter(MaxCase > 5000) %>% 
      select(Country.Region)
 
-data2 %>% 
+(state.list3 = data2 %>% 
      group_by(Country.Region) %>% 
      arrange(desc(date)) %>% 
      slice(1) %>% 
-     filter(log(Count) < 9, log(Count) > 8.5)
+     filter((Count) < 20000, (Count) > 10000))
 
 data2 %>% 
-     filter(Country.Region %in% state.list2$Country.Region, Count > 500) %>% 
-     #filter(Country.Region %in% c('Brazil', 'Japan', 'Singapore', 'Sweden', 'Korea, South', 'Canada', 'Philippines', 'Malaysia', 'Qatar')) %>% 
-     filter(Country.Region %in% c('Japan', 'Singapore', 'Sweden', 'Korea, South', 'Philippines', 'Malaysia', 'Qatar')) %>% 
+ #    filter(Country.Region %in% state.list2$Country.Region, Count > 500) %>% 
+     filter(Country.Region %in% unique(state.list3$Country.Region), Count>500) %>% 
+     #filter(Country.Region %in% c('Japan', 'Singapore', 'Sweden', 'Korea, South', 'Philippines', 'Malaysia', 'Qatar'), Count>500) %>% 
      group_by(Country.Region) %>% 
      mutate(day = c(1:n())) %>% 
      ungroup() %>% 
-     ggplot(aes(x = day, y = log(Count), color = Country.Region)) +
+     ggplot(aes(x = day, y = log(Count), col = Country.Region)) +
           geom_point() +
           geom_line() +  
           xlab('Days since case number exceeded 500') +
@@ -107,16 +104,16 @@ state.list2 = data2 %>%
         filter(MaxCase > 100) %>% 
         select(Country.Region)
 
-data2 %>% 
+(state.list4 = data2 %>% 
         group_by(Country.Region) %>% 
         arrange(desc(date)) %>% 
         slice(1) %>% 
-        filter(log(Count) < 6.25, log(Count) > 5)
+        filter((Count) < 600, (Count) > 300))
 
 data2 %>% 
-        filter(Country.Region %in% state.list2$Country.Region, Count > 50) %>% 
+        filter(Country.Region %in% state.list4$Country.Region, Count > 50) %>% 
        # filter(Country.Region %in% c('Japan', 'Singapore', 'Sweden', 'Korea, South', 'Philippines', 'Malaysia', 'Qatar')) %>% 
-        filter(Country.Region %in% c('Japan', 'Singapore', 'Pakistan', 'Korea, South', 'Dominican Republic','Israel', 'Norway')) %>% 
+       # filter(Country.Region %in% c('Japan', 'Singapore', 'Pakistan', 'Korea, South', 'Dominican Republic','Israel', 'Norway')) %>% 
         group_by(Country.Region) %>% 
         mutate(day = c(1:n())) %>% 
         ungroup() %>% 
