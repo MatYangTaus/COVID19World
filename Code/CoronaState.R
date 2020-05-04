@@ -8,7 +8,7 @@ latest.df = df %>%
     arrange(desc(date)) %>% 
     slice(1) %>% 
     ungroup() %>% 
-    filter(cases > 7000) %>% 
+    filter(cases > 10000) %>% 
     arrange(desc(cases))
 
 slice(latest.df, 1:15)
