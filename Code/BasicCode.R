@@ -1,4 +1,4 @@
-pacman::p_load(tidyverse, skimr, lubridate, ggthemes)
+pacman::p_load(tidyverse, skimr, lubridate, ggthemes, nord)
 
 #json_file <- "https://covidtracking.com/api/v1/states/current.json"
 #json_data <- fromJSON(paste(readLines(json_file), collapse=""))
@@ -63,7 +63,7 @@ state.list2 = data2 %>%
      group_by(Country.Region) %>% 
      arrange(desc(date)) %>% 
      slice(1) %>% 
-     filter((Count) < 20000, (Count) > 10000))
+     filter((Count) < 15000, (Count) > 10000))
 
 data2 %>% 
  #    filter(Country.Region %in% state.list2$Country.Region, Count > 500) %>% 
@@ -75,11 +75,12 @@ data2 %>%
      ggplot(aes(x = day, y = log(Count), col = Country.Region)) +
           geom_point() +
           geom_line() +  
+        #  scale_color_nord("victory_bonds") +
           xlab('Days since case number exceeded 500') +
           ylab('log Case') +
           #coord_trans(y="log2") +
-          theme_minimal()
-     #     theme_fivethirtyeight()
+          theme_minimal() +
+          theme_fivethirtyeight()
 
 ## World Death
 data = read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv')
