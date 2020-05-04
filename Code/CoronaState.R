@@ -43,6 +43,7 @@ df %>%
 
 df %>%
   filter(state %in% latest.df$state, date > as.Date("2020-02-25")) %>% 
+  filter(state %in% c('Illinois', 'North Carolina', 'Indiana', 'Virginia', 'Texas')) %>% 
   ggplot(aes(x = date, y = log(cases), color = state)) + #, color = type)) +
   geom_point() +
   geom_line() +
@@ -54,7 +55,7 @@ df %>%
 #df2 = read.csv('us-counties.csv', colClasses = c("fips" = "character", "date" = "Date"))
 df2 = read.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv', colClasses = c("fips" = "character", "date" = "Date"))
 
-Bay.Area = c('041', '097', '055', '095', '013', '001', '085', '087', '081', '075', '037')
+Bay.Area = c('041', '097', '055', '095', '013', '001', '085', '087', '081', '075', '037', '073')
 #Bay.Area = c('013', '001',  '075')
 
 df2 %>% 

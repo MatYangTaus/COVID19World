@@ -63,7 +63,9 @@ state.list2 = data2 %>%
      group_by(Country.Region) %>% 
      arrange(desc(date)) %>% 
      slice(1) %>% 
-     filter((Count) < 15000, (Count) > 10000))
+#     filter(Count > 100000, Count < 200000) %>% 
+     filter((Count) < 18000, (Count) > 13000) %>% 
+    {.})
 
 data2 %>% 
  #    filter(Country.Region %in% state.list2$Country.Region, Count > 500) %>% 
