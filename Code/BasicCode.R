@@ -74,7 +74,7 @@ data2 %>%
      group_by(Country.Region) %>% 
      mutate(day = c(1:n())) %>% 
      ungroup() %>% 
-     ggplot(aes(x = day, y = log(Count), col = Country.Region)) +
+     ggplot(aes(x = day, y = (Count), col = Country.Region)) +
           geom_point() +
           geom_line() +  
         #  scale_color_nord("victory_bonds") +
