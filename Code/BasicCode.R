@@ -43,7 +43,7 @@ data2 = data %>%
      select(-c(Lat, Long)) %>% 
      group_by(Country.Region, Province.State) %>% 
      pivot_longer(-c(Country.Region, Province.State), names_to = "tempdate", values_to = "count") %>% 
-     mutate(n = c(1:n())) %>% #, date =  as.Date(ifelse(n == 1, '2020-01-22', NA))) %>% 
+     mutate(n = c(1:n())) %>% 
      mutate(date = as.Date('2020-01-21') + n) %>% 
      ungroup() %>% 
      select(Country.Region, Province.State, date, count) %>% 
@@ -51,6 +51,15 @@ data2 = data %>%
      summarize(Count = sum(count)) %>% 
      ungroup()
  
+data2 %>% 
+     group_by(Country.Region) %>%  
+     arrange(date) %>% 
+     mutate(New.Case.1wk = Count - lag(Count,7), K = 1- New.Case.1wk/Count) %>% 
+     arrange(date) %>% 
+     slice(n()) %>% 
+     filter(Count> 2000) %>% 
+     arrange(K)
+
 state.list2 = data2 %>% 
      group_by(Country.Region) %>% 
      mutate(MaxCase = max(Count)) %>% 
