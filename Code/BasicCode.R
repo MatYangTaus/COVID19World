@@ -29,7 +29,7 @@ df %>%
      group_by(state) %>% 
      mutate(day = c(1:n())) %>% 
      ungroup() %>% 
-     ggplot(aes(x = day, y = (cases), color = state)) +
+     ggplot(aes(x = day, y = log(cases), color = state)) +
           geom_point() +
           geom_line() +
           #coord_trans(y="log2") +
@@ -38,6 +38,27 @@ df %>%
 
 ## World
 data = read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
+
+pop = read.csv('https://raw.githubusercontent.com/datasets/population/master/data/population.csv') %>% 
+    filter(Year == 2018) %>% 
+    rename(Country.Region = Country.Name) %>% 
+    mutate(Country.Region = replace(Country.Region, Country.Region =='Iran, Islamic Rep.', 'Iran'),
+           Country.Region = replace(Country.Region, Country.Region =='Bahamas, The', 'Bahamas'),
+           Country.Region = replace(Country.Region, Country.Region =='Brunei Darussalam', 'Brunei'),
+           Country.Region = replace(Country.Region, Country.Region =='Myanmar', 'Burma'),
+           Country.Region = replace(Country.Region, Country.Region =='Congo, Dem. Rep.', 'Congo (Brazzaville)'),
+           Country.Region = replace(Country.Region, Country.Region =='Czech Republic', 'Czechia'),
+           Country.Region = replace(Country.Region, Country.Region =='Egypt, Arab Rep.', 'Egypt'),                        Country.Region = replace(Country.Region, Country.Region =='Gambia, The', 'Gambia'),  
+           Country.Region = replace(Country.Region, Country.Region =='Korea, Rep.', 'Korea, South'),  
+           Country.Region = replace(Country.Region, Country.Region =='Kyrgyz Republic', 'Kyrgyzstan'),  
+           Country.Region = replace(Country.Region, Country.Region =='Lao PDR', 'Laos'),  
+           Country.Region = replace(Country.Region, Country.Region =='Russian Federation', 'Russia'),  
+           Country.Region = replace(Country.Region, Country.Region =='Slovak Republic', 'Slovakia'),  
+           Country.Region = replace(Country.Region, Country.Region =='Syrian Arab Republic', 'Syria'),  
+           Country.Region = replace(Country.Region, Country.Region =='United States', 'US'),  
+           Country.Region = replace(Country.Region, Country.Region =='Venezuela, RB', 'Venezuela'),  
+           Country.Region = replace(Country.Region, Country.Region =='Yemen, Rep.', 'Yemen')
+    )
 
 data2 = data %>% 
      select(-c(Lat, Long)) %>% 
@@ -49,7 +70,9 @@ data2 = data %>%
      select(Country.Region, Province.State, date, count) %>% 
      group_by(Country.Region, date) %>% 
      summarize(Count = sum(count)) %>% 
-     ungroup()
+     ungroup() %>% 
+     left_join(pop, by = 'Country.Region')
+  
  
 data2 %>% 
      group_by(Country.Region) %>%  
@@ -57,9 +80,40 @@ data2 %>%
      mutate(New.Case.1wk = Count - lag(Count,7), K = 1- New.Case.1wk/Count) %>% 
      arrange(date) %>% 
      slice(n()) %>% 
+     mutate(Rate = Count*10000/Value) %>% 
      filter(Count> 2000) %>% 
-     arrange(K)
+     arrange(K) %>% 
+    # print(n = 20) %>%
+     ggplot(aes(x = log(Count), y = K, label = Country.Region)) +
+        geom_point() +
+        geom_text(hjust = 0, nudge_x = 0.05) +
+        theme_bw()
 
+data2 %>% 
+    group_by(Country.Region) %>%  
+    arrange(date) %>% 
+    mutate(New.Case.1wk = Count - lag(Count,7), K = 1- New.Case.1wk/Count) %>% 
+    arrange(date) %>% 
+    slice(n()) %>% 
+    mutate(Rate = Count*10000/Value) %>% 
+    filter(Count> 2000) %>% 
+    arrange(K) %>% 
+    # print(n = 20) %>%
+    ggplot(aes(x = Rate, y = K, label = Country.Region)) +
+    geom_point() +
+    geom_text(hjust = 0, nudge_x = 0.05) +
+    theme_bw()
+
+data2 %>% 
+    group_by(Country.Region) %>%  
+    arrange(date) %>% 
+    mutate(New.Case.1wk = Count - lag(Count,7), K = 1- New.Case.1wk/Count, Rate = Count*10000/Value, Max = max(Count)) %>% 
+    arrange(Country.Region,date) %>% 
+    filter(!is.na(K), Max>20000) %>% 
+    ggplot(aes(x = Rate, y = K, color = Country.Region)) +
+       geom_line() +
+       theme_bw()
+  
 state.list2 = data2 %>% 
      group_by(Country.Region) %>% 
      mutate(MaxCase = max(Count)) %>% 
