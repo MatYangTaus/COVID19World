@@ -65,6 +65,19 @@ df.k %>%
   slice(n()) %>% 
   arrange(K)
 
+df %>% 
+  group_by(state) %>%  
+  arrange(date) %>% 
+  mutate(New.Case.1wk = cases - lag(cases,7), K = 1- New.Case.1wk/cases) %>% 
+  arrange(date) %>% 
+  slice(n()) %>% 
+  # print(n = 20) %>%
+  ggplot(aes(x = log(cases), y = K, label = state)) +
+    geom_point() +
+    geom_text(hjust = 0, nudge_x = 0.05) +
+    theme_bw()
+
+
 # Case by County
 
 #df2 = read.csv('us-counties.csv', colClasses = c("fips" = "character", "date" = "Date"))
@@ -101,12 +114,14 @@ df.k.state = df2 %>%
   {.} 
 
 df.k.state %>% 
-  filter(K <=1) %>% 
-  filter(substr(fips, 3, 5) %in% Bay.Area) %>% 
-  ggplot(aes(x = date, y = K, color = county)) +
-    geom_point() +
-    geom_line() +
-    theme_bw()
+  group_by(county) %>% 
+  arrange(date) %>% 
+  slice(n()) %>% 
+  filter(cases>10) %>% 
+  ggplot(aes(x = log(cases), y = K, label = county)) +
+      geom_point() +
+      geom_text(hjust = 0, nudge_x = 0.05) +
+      theme_bw()
 
 df.k.state %>% 
   arrange(county, date) %>% 
