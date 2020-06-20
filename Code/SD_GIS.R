@@ -45,6 +45,7 @@ tm_shape(df2) +
      tm_polygons('Count' , n = 3)
 
 ggplot(data = df2) +
+        
      geom_sf(aes(fill = Rate)) +
  #    scale_fill_nord('halifax_harbor') +
      theme_minimal()
