@@ -8,7 +8,7 @@ latest.df = df %>%
        arrange(desc(date)) %>% 
        slice(1) %>% 
        ungroup() %>% 
-       filter(cases > 30000) %>% 
+       filter(cases > 50000) %>% 
        arrange(desc(cases))
 
 slice(latest.df, 1:15)
@@ -26,20 +26,18 @@ df %>%
        facet_wrap(~state, scales = 'free') +
        theme_minimal()
 
-df %>%
-       filter(state %in% latest.df$state, date > as.Date("2020-02-25")) %>% 
-       #group_by(state) %>%
-       #arrange(date) %>%
-       #mutate(cum.cases = cumsum(cases)) %>%
-       #ungroup() %>%
-       #group_by(type, Province.State, date) %>%
-       #summarize(cum.cases2 = sum(cum.cases)) %>%
-       #ungroup() %>%
-       ggplot(aes(x = date, y = (cases))) + #, color = type)) +
-       geom_point() +
-       geom_line() +
-       facet_wrap(~state, scales = 'free') +
-       theme_fivethirtyeight()
+df %>% 
+        #  filter(fips == '06') %>% 
+        filter(state %in% latest.df$state, date > as.Date("2020-02-25")) %>% 
+        group_by(state) %>%  
+        mutate(New.Case = cases - lag(cases), New.Death = deaths - lag(deaths)) %>%
+        ungroup() %>% 
+        filter(!is.na(New.Death)) %>% 
+        ggplot(aes(x = date, y = New.Death)) +
+        #  ggplot(aes(x = date, y = New.Death)) +
+        geom_bar(stat = 'identity', fill = 'steelblue') +
+        facet_wrap(~state, scales = 'free') +
+        theme_minimal()
 
 df.k = df %>% 
        #  filter(fips == '06') %>% 
