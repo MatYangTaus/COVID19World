@@ -207,7 +207,7 @@ df.county %>%
        arrange(date) %>% 
        slice(n()) %>% 
        mutate(Name = paste(county, state, sep = ',')) %>% 
-       filter(K < 0.85, Population > 100000, cases>100, Prevalence.case>50) %>% 
+       filter(K < 0.975, Population > 100000, cases>100, Prevalence.case> 225) %>% 
        #       mutate(Prevalence = cases*10000/Population) %>% 
        ggplot(aes(x = Prevalence.case, y = K, label = Name)) +
               geom_point() +
