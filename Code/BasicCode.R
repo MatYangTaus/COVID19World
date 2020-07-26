@@ -89,7 +89,7 @@ data2 %>%
         geom_text(hjust = 0, nudge_x = 0.05) +
         theme_bw()
 
-data2 %>% 
+data2 %>%  
     group_by(Country.Region) %>%  
     arrange(date) %>% 
     mutate(New.Case.1wk = Count - lag(Count,7), K = 1- New.Case.1wk/Count) %>% 
